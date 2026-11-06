@@ -1,0 +1,33 @@
+# Folders
+**/.git/
+**/__pycache__/
+**/.venv*/
+**/.idea/
+**/staticfiles/
+**/assets/
+keys/
+traefik/
+nginx/
+mock_services/
+media/
+**/mattermost/
+
+# Files
+.env
+*.sqlite3
+*.pdf
+*.txt
+!requirements.txt
+*.log
+
+# Image files - Ignore all, except in the 'static' folder
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.svg
+*.webp
+*.bmp
+!static/**/*.*
+
+generate_folder_structure.py

@@ -1,0 +1,17 @@
+Django==5.1.2
+python-dotenv==1.0.1
+django-simple-history==3.5.0
+waitress==3.0.2
+djangorestframework==3.15.2
+pyjwt==2.8.0
+psycopg2==2.9.9
+drf-spectacular==0.27.2
+python-decouple==3.8
+crispy-bootstrap4==2024.10
+django-crispy-forms==2.3
+django-filter==24.3
+requests==2.32.3
+django-autocomplete-light==3.11.0
+drf-nested-routers==0.94.1
+numpy==2.3.2
+shapely==2.1.1

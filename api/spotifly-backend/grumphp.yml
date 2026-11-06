@@ -1,0 +1,60 @@
+# grumphp.yml
+grumphp:
+    hooks_dir: ~
+    hooks_preset: local
+    stop_on_failure: false
+    ignore_unstaged_changes: false
+    hide_circumvention_tip: false
+    process_timeout: 60
+    ascii:
+        failed: grumphp-grumpy.txt
+        succeeded: grumphp-happy.txt
+    parallel:
+        enabled: true
+        max_workers: 32
+    fixer:
+        enabled: true
+        fix_by_default: false
+    environment:
+        files: []
+        variables: {}
+        paths: []
+    tasks:
+        git_commit_message:
+            matchers:
+                Must contain issue number (e.g. SPOT-123: ...): /SPOT-\d+:.|hotfix:./
+            case_insensitive: false
+            enforce_capitalized_subject: false
+        phpcsfixer2:
+            allow_risky: true
+            cache_file: ~
+            config: .php-cs-fixer.dist.php
+            rules: []
+            using_cache: ~
+            config_contains_finder: true
+            verbose: true
+            diff: true
+            triggered_by: ['php']
+        phpstan:
+            autoload_file: ~
+            configuration: ~
+            level: null
+            force_patterns: []
+            ignore_patterns: []
+            triggered_by: ['php']
+            memory_limit: "-1"
+            use_grumphp_paths: true
+        phpmd:
+            whitelist_patterns: []
+            exclude: []
+            report_format: text
+            ruleset: ['phpmd-grumphp']
+            triggered_by: ['php']
+        # securitychecker_composeraudit:
+        #     format: null
+        #     locked: true
+        #     no_dev: true
+        #     run_always: false
+        #     working_dir: null
+    testsuites: []
+    extensions: []

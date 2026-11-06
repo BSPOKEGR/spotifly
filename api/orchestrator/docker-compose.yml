@@ -1,0 +1,122 @@
+services:
+  redis:
+    image: bitnami/redis:7.4.1
+    container_name: spotifly-redis
+    user: root
+    command: redis-server --save 60 1000 --requirepass ${REDIS_PASSWORD}
+    restart: ${RESTART}
+    ports:
+      - "${REDIS_PORT:-6612}:6379"
+    volumes:
+      - spotifly-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - spotifly-net
+
+  db:
+    image: postgis/postgis:17-3.5-alpine
+    container_name: "spotifly-db"
+    restart: ${RESTART}
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "${DB_PORT:-6001}:5432"
+    volumes:
+      - spotifly-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - spotifly-net
+
+  backend:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    build:
+      context: ../spotifly-backend/deploy
+      target: ${TARGET_BACKEND_ENV}
+      args:
+        API_VIRTUALHOST_NAME: ${API_VIRTUALHOST}
+        NGINX_WORKER_CONNECTIONS: ${NGINX_WORKER_CONNECTIONS}
+        VIRTUAL_HOST: ${API_VIRTUALHOST}
+        VIRTUAL_PORT: 80
+    container_name: "spotifly-backend"
+    environment:
+      APP_URL: ${API_APP_URL}
+      LETSENCRYPT_HOST: ${API_VIRTUALHOST}
+      VIRTUAL_HOST: ${API_VIRTUALHOST}
+      VIRTUAL_PORT: 80
+    restart: ${RESTART}
+    volumes:
+      - ../spotifly-backend:/var/www/html
+    networks:
+      spotifly-net:
+        aliases:
+          - ${API_VIRTUALHOST}
+      nginx-proxy:
+        aliases:
+          - ${API_VIRTUALHOST}
+      openagri:
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+
+  client:
+    build:
+      # If your client has a Dockerfile that builds to static files
+      context: ../../client
+      # Use multi-stage Dockerfile that outputs production nginx image
+      target: ${TARGET_CLIENT_ENV:-prod}
+      args:
+        VIRTUAL_HOST: ${CLIENT_VIRTUALHOST}
+        VIRTUAL_PORT: 80
+    container_name: "spotifly-client"
+    environment:
+      # nginx-proxy routing
+      VIRTUAL_HOST: ${CLIENT_VIRTUALHOST}
+      VIRTUAL_PORT: 80
+      LETSENCRYPT_HOST: ${CLIENT_VIRTUALHOST}
+      # If the client needs to know API base URL at runtime (e.g., served by Nginx via envsubst)
+      API_BASE_URL: ${API_PUBLIC_URL}
+    # If you run a dev server locally instead of nginx, expose the dev port and set VIRTUAL_PORT accordingly
+    # ports:
+    #   - "5173:5173"  # example for Vite
+    restart: ${RESTART}
+    # For live dev mounting (optional):
+    # volumes:
+    #   - ../spotifly-client/dist:/usr/share/nginx/html:ro
+    networks:
+      spotifly-net:
+        aliases:
+          - ${CLIENT_VIRTUALHOST}
+      nginx-proxy:
+        aliases:
+          - ${CLIENT_VIRTUALHOST}
+    depends_on:
+      backend:
+        condition: service_started
+
+networks:
+  spotifly-net:
+    name: spotifly-net
+    external: true
+  nginx-proxy:
+    name: nginx-proxy
+    external: true
+  openagri:
+    name: openagri
+    external: true
+
+volumes:
+  spotifly-db:
+  spotifly-redis:

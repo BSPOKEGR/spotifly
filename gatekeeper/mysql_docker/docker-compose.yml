@@ -1,0 +1,44 @@
+services:
+  mysql:
+    image: mysql:8.0
+    build: .
+    restart: no
+    container_name: oa_gk_mysql_django
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: gatekeeper
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_USER: gatekeeper_admin
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+    ports:
+      - "3312:3306"
+    volumes:
+      - oa_gk_volume:/var/lib/mysql
+    networks:
+      - oa_network
+    command:
+      [
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci"
+      ]
+
+  phpmyadmin_gatekeeper:
+    image: phpmyadmin/phpmyadmin
+    container_name: oa_gk_phpmyadmin_django
+    restart: no
+    env_file:
+      - .env
+    ports:
+      - "8088:80"
+    networks:
+      - oa_network
+    depends_on:
+      - mysql
+
+volumes:
+  oa_gk_volume: {}
+
+networks:
+  oa_network:
+    driver: bridge

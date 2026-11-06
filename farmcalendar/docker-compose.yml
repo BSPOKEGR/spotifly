@@ -1,0 +1,67 @@
+version: '3.9'
+
+services:
+  oa_fc_postgres:
+    image: postgres:16.3
+    container_name: oa_fc_postgres
+    ports:
+      - "5556:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: no
+    volumes:
+      - farm-db:/var/lib/postgresql/data
+    networks:
+      - fc_internal
+
+  oa_fc_pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: oa_fc_pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    depends_on:
+      - oa_fc_postgres
+    restart: no
+    networks:
+      - fc_internal
+  web:
+    build: .
+    image: ghcr.io/openagri-eu/openagri-farmcalendar:latest
+    container_name: farmcalendar
+    env_file:
+      - .env
+    command: /var/www/entrypoint.sh
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      - oa_fc_postgres
+    environment:
+      POSTGRES_HOST: oa_fc_postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      LOGGING_LEVEL: ${LOGGING_LEVEL}
+      GATEKEEPER_LOGIN_URL: ${GATEKEEPER_LOGIN_URL}
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      JWT_COOKIE_NAME: ${JWT_COOKIE_NAME}
+      APP_HOST: 0.0.0.0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./:/var/www
+    networks:
+      - openagri
+      - fc_internal
+networks:
+    openagri:
+      external: true
+    fc_internal:
+      driver: bridge
+volumes:
+  farm-db:

@@ -1,0 +1,39 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#1a2e1d"/>
+
+  <!-- Subtle grid texture -->
+  <rect width="1200" height="630" fill="url(#grid)" opacity="0.04"/>
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <!-- Decorative circle accent top right -->
+  <circle cx="1100" cy="-60" r="280" fill="#4E7255" opacity="0.18"/>
+  <circle cx="1100" cy="-60" r="180" fill="#4E7255" opacity="0.15"/>
+
+  <!-- Decorative circle accent bottom left -->
+  <circle cx="100" cy="720" r="260" fill="#4E7255" opacity="0.12"/>
+
+  <!-- Logo icon mark -->
+  <rect x="80" y="180" width="90" height="90" rx="18" fill="#4E7255"/>
+  <text x="125" y="244" font-family="Georgia, serif" font-size="58" font-weight="700" fill="white" text-anchor="middle">S</text>
+
+  <!-- SPOTIFLY wordmark -->
+  <text x="192" y="256" font-family="Arial, Helvetica, sans-serif" font-size="68" font-weight="800" fill="#ffffff" letter-spacing="4">SPOTIFLY</text>
+
+  <!-- Divider line -->
+  <rect x="80" y="300" width="600" height="2" fill="#4E7255" opacity="0.6"/>
+
+  <!-- Tagline -->
+  <text x="80" y="360" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="400" fill="#a8c5aa" letter-spacing="1">Olive Pest Monitoring System</text>
+
+  <!-- Description -->
+  <text x="80" y="420" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#6e9b72" letter-spacing="0.5">Monitor parcels · Track actions · Analyze weather &amp; pests</text>
+
+  <!-- Bottom right badge -->
+  <rect x="960" y="540" width="160" height="48" rx="24" fill="#4E7255" opacity="0.3"/>
+  <text x="1040" y="571" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#a8c5aa" text-anchor="middle" letter-spacing="1">spotifly.app</text>
+</svg>
